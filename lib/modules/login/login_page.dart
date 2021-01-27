@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:max_process_test/database/dao/usuario_dao.dart';
 import 'package:max_process_test/resources/values/ui_color.dart';
 import 'package:max_process_test/services/api_service.dart';
 import 'package:max_process_test/shareds/models/login/login_password_model.dart';
@@ -15,6 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController senha = new TextEditingController();
   bool passwordVisitibility = false;
   ApiService apiService = new ApiService();
+  UsuarioDAO usuarioDAO = new UsuarioDAO();
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -277,7 +279,7 @@ class _LoginPageState extends State<LoginPage> {
                         new LoginPasswordModel();
                     loginPasswordModel.login = this.login.text;
                     loginPasswordModel.password = senha.text;
-                    apiService.login(context, loginPasswordModel);
+                    this.avancar(loginPasswordModel);
                   }
                 }, "Avancar"),
               ),
@@ -286,5 +288,12 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
     );
+  }
+
+  Future<void> avancar(LoginPasswordModel loginPasswordModel) async {
+    await apiService.login(context, loginPasswordModel).then((value) {
+      usuarioDAO.salvar(context, value);
+      Navigator.of(context).pushNamed('/home');
+    });
   }
 }
