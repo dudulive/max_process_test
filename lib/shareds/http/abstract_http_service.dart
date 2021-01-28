@@ -1,57 +1,57 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart';
-import 'package:http_interceptor/http_client_with_interceptor.dart';
 import 'package:max_process_test/database/dao/usuario_dao.dart';
 import 'package:max_process_test/shareds/exceptions/app_exception.dart';
 
-import 'logging_interceptor.dart';
-
 class AbstractHttpService {
-  static const int TEMPO_TIMEOUT = 60;
-  static const String URL = "http://treinamento.duckdns.org:45456";
+  static const String URL = "https://treinamento.duckdns.org:45456";
+  static const _AUTHORIZATION = 'Authorization';
 
-  Client _client;
+  HttpClient _client;
+  UsuarioDAO usuarioDAO = new UsuarioDAO();
 
-  Map<String, String> headers = new Map<String, String>();
-
-  createInterceptorContentTypeJson(context, {tempoTimeout}) {
-    headers['Content-Type'] = "application/json";
-    LoggingInterceptor interceptor =
-        LoggingInterceptor(context: context, headers: headers);
-    this._client = HttpClientWithInterceptor.build(
-        interceptors: [interceptor],
-        requestTimeout: Duration(seconds: tempoTimeout ?? TEMPO_TIMEOUT));
+  create() {
+    _client = new HttpClient();
+    _client.badCertificateCallback =
+        ((X509Certificate cert, String host, int port) => Platform.isAndroid);
     return this;
   }
 
   Future<dynamic> post(path, body, context) async {
-    HttpClient http = new HttpClient();
-    http.badCertificateCallback =
-        ((X509Certificate cert, String host, int port) => Platform.isAndroid);
-    final Response response = await this
-        ._client
-        .post(URL + path, headers: headers, body: jsonEncode(body));
+    HttpClientRequest request = await _client.postUrl(Uri.parse(URL + path));
+    request.headers.set('content-type', 'application/json');
+    String token = await usuarioDAO.consultarToken(context);
+    request.headers.set(_AUTHORIZATION, "Bearer " + token);
+    request.add(utf8.encode(json.encode(body)));
+    HttpClientResponse response = await request.close();
+    return _returnResponse(response);
+  }
 
+  Future<dynamic> postNoAuthorization(path, body, context) async {
+    HttpClientRequest request = await _client.postUrl(Uri.parse(URL + path));
+    request.headers.set('content-type', 'application/json');
+    request.add(utf8.encode(json.encode(body)));
+    HttpClientResponse response = await request.close();
     return _returnResponse(response);
   }
 
   Future<dynamic> get(path, context) async {
-    HttpClient http = new HttpClient();
-    http.badCertificateCallback =
-        ((X509Certificate cert, String host, int port) => Platform.isAndroid);
-    final response = await this._client.get(URL + path, headers: headers);
+    HttpClientRequest request = await _client.getUrl(Uri.parse(URL + path));
+    request.headers.set('content-type', 'application/json');
+    String token = await usuarioDAO.consultarToken(context);
+    request.headers.set(_AUTHORIZATION, "Bearer " + token);
+    HttpClientResponse response = await request.close();
     return _returnResponse(response);
   }
 
-  dynamic _returnResponse(Response response) {
+  dynamic _returnResponse(HttpClientResponse response) async {
     Utf8Codec utf8 = new Utf8Codec();
     switch (response.statusCode) {
       case 200:
-        return response.body.toString();
+        return await response.transform(utf8.decoder).join();
       default:
         throw AppException(
-            utf8.decode(response.bodyBytes).toString(), response.statusCode);
+            await response.transform(utf8.decoder).join(), response.statusCode);
     }
   }
 }

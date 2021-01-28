@@ -4,6 +4,8 @@ import 'package:max_process_test/database/dao/usuario_dao.dart';
 import 'package:max_process_test/resources/values/ui_color.dart';
 import 'package:max_process_test/services/api_service.dart';
 import 'package:max_process_test/shareds/models/login/login_password_model.dart';
+import 'package:max_process_test/util/http_util.dart';
+import 'package:max_process_test/util/modal_util.dart';
 import 'package:max_process_test/util/screen_util.dart';
 
 class LoginPage extends StatefulWidget {
@@ -294,6 +296,26 @@ class _LoginPageState extends State<LoginPage> {
     await apiService.login(context, loginPasswordModel).then((value) {
       usuarioDAO.salvar(context, value);
       Navigator.of(context).pushNamed('/home');
+    }).catchError((error) {
+      if (error.getStatusCode() == 401) {
+        ModalUtil.openModalBlueWithIcon(
+            Icon(
+              Icons.error,
+              color: Colors.white,
+              size: ScreenUtil().setSp(110),
+            ),
+            "Usuário ou senha inválidos",
+            context);
+      } else {
+        ModalUtil.openModalBlueWithIcon(
+            Icon(
+              Icons.error,
+              color: Colors.white,
+              size: ScreenUtil().setSp(110),
+            ),
+            HttpUtil.tratarRetornoComMensagemPadrao(error, error.getMessage()),
+            context);
+      }
     });
   }
 }

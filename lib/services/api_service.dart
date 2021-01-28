@@ -11,8 +11,8 @@ class ApiService extends AbstractHttpService {
       BuildContext context, LoginPasswordModel loginPasswordModel) async {
     try {
       final String response = await this
-          .createInterceptorContentTypeJson(context)
-          .post('/api/Login', loginPasswordModel.toJson(), context);
+          .create()
+          .postNoAuthorization('/api/Login', loginPasswordModel.toJson(), context);
       return DadosLoginModel.fromJson(jsonDecode(response));
     } catch (err) {
       throw err;
@@ -21,11 +21,9 @@ class ApiService extends AbstractHttpService {
 
   Future<List<ListagemModel>> listagem(BuildContext context) async {
     try {
-      //final String path = '/api/weatherforecast/dados';
-      final String path = '/api/weatherforecast';
-      final String response = await this
-          .createInterceptorContentTypeJson(context)
-          .get(path, context);
+      final String path = '/api/weatherforecast/dados';
+      //final String path = '/api/weatherforecast';
+      final String response = await this.create().get(path, context);
       List<ListagemModel> listagem = List();
       for (Map<String, dynamic> map in jsonDecode(response)) {
         listagem.add(ListagemModel.fromJson(map));
