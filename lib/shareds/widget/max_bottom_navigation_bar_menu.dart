@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:max_process_test/database/dao/usuario_dao.dart';
 import 'package:max_process_test/resources/values/ui_color.dart';
 
+// ignore: must_be_immutable
 class MaxBottomNavigationBarMenu extends StatelessWidget {
   BuildContext context;
   int selectedIndex;

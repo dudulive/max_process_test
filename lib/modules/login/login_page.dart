@@ -279,8 +279,8 @@ class _LoginPageState extends State<LoginPage> {
                   if (_formKey.currentState.validate()) {
                     LoginPasswordModel loginPasswordModel =
                         new LoginPasswordModel();
-                    loginPasswordModel.login = this.login.text;
-                    loginPasswordModel.password = senha.text;
+                    loginPasswordModel.login = this.login.text.trim();
+                    loginPasswordModel.password = senha.text.trim();
                     this.avancar(loginPasswordModel);
                   }
                 }, "Avancar"),
@@ -293,8 +293,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> avancar(LoginPasswordModel loginPasswordModel) async {
-    await apiService.login(context, loginPasswordModel).then((value) {
-      usuarioDAO.salvar(context, value);
+    await apiService.login(context, loginPasswordModel).then((value) async {
+      await usuarioDAO.deletarTodos(context);
+      await usuarioDAO.salvar(context, value);
       Navigator.of(context).pushNamed('/home');
     }).catchError((error) {
       if (error.getStatusCode() == 401) {

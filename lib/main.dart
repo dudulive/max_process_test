@@ -3,6 +3,7 @@ import 'package:max_process_test/database/app_database.dart';
 import 'package:max_process_test/modules/home/home_page.dart';
 import 'package:max_process_test/modules/listagem/listagem_page.dart';
 import 'package:max_process_test/modules/login/login_page.dart';
+import 'package:max_process_test/modules/splash_screen/splash_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: LoginPage(),
+      home: SplashScreen(),
     );
   }
 }

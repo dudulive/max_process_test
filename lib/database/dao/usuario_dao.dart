@@ -86,4 +86,17 @@ class UsuarioDAO {
     }
     return null;
   }
+
+  Future<DateTime> consultarDataExpiracao(BuildContext context) async {
+    try {
+      final Database db = await appDataBase.openDb(context);
+      final List<Map<String, dynamic>> maps = await db.query(TB_USUARIO);
+      if (maps != null && maps.length > 0) {
+        return DadosLoginModel.fromJson(maps[0]).getDataExpiracao();
+      }
+    } catch (err) {
+      throw err;
+    }
+    return null;
+  }
 }

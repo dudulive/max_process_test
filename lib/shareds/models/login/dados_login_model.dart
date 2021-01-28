@@ -1,3 +1,5 @@
+import 'package:intl/date_symbol_data_local.dart';
+
 class DadosLoginModel {
   String login;
   String token;
@@ -26,5 +28,10 @@ class DadosLoginModel {
     data['dataExpiracao'] = this.dataExpiracao;
     data['idPessoa'] = this.idPessoa;
     return data;
+  }
+
+  DateTime getDataExpiracao(){
+    initializeDateFormatting();
+    return DateTime.parse(this.dataExpiracao);
   }
 }
