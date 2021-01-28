@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:max_process_test/resources/values/ui_color.dart';
 import 'package:max_process_test/services/api_service.dart';
 import 'package:max_process_test/shareds/models/listagem/listagem_model.dart';
+import 'package:max_process_test/shareds/widget/custom_circular_progress.dart';
 import 'package:max_process_test/shareds/widget/max_app_bar.dart';
 
 import 'package:max_process_test/util/screen_util.dart';
@@ -36,11 +37,7 @@ class _ListagemPageState extends State<ListagemPage> {
                         switch (snapshot.connectionState) {
                           case ConnectionState.waiting:
                           case ConnectionState.none:
-                            return Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                              ),
-                            );
+                            return CustomCircularProgress();
                           default:
                             if (snapshot.hasError && snapshot.data) {
                               return Container(
@@ -74,12 +71,12 @@ class _ListagemPageState extends State<ListagemPage> {
                 children: [
                   Text(list[0].datePtBr(),
                       style: TextStyle(
-                          color: UIColor.PRIMARY_COLOR,
+                          color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: ScreenUtil().setSp(80))),
                   Text(list[0].temperatureC.toString() + "° C",
                       style: TextStyle(
-                          color: UIColor.PRIMARY_COLOR,
+                          color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: ScreenUtil().setSp(100))),
                   clima(list[0].temperatureC, ScreenUtil().setSp(150))
@@ -178,7 +175,10 @@ class _ListagemPageState extends State<ListagemPage> {
                           fontWeight: FontWeight.bold,
                           fontSize: ScreenUtil().setSp(50))),
                 ),
-                Expanded(flex: 1, child: clima(listagemModel.temperatureC, ScreenUtil().setSp(100)))
+                Expanded(
+                    flex: 1,
+                    child: clima(
+                        listagemModel.temperatureC, ScreenUtil().setSp(100)))
               ],
             ),
           ],
@@ -189,14 +189,11 @@ class _ListagemPageState extends State<ListagemPage> {
 
   Icon clima(int temperatureC, size) {
     if (temperatureC <= 0) {
-      return Icon(Icons.ac_unit,
-          color: UIColor.PRIMARY_COLOR, size: size);
+      return Icon(Icons.ac_unit, color: UIColor.PRIMARY_COLOR, size: size);
     } else if (temperatureC > 0 && temperatureC <= 15) {
-      return Icon(Icons.cloud,
-          color: UIColor.PRIMARY_COLOR, size: size);
+      return Icon(Icons.cloud, color: UIColor.PRIMARY_COLOR, size: size);
     } else {
-      return Icon(Icons.wb_sunny,
-          color: UIColor.PRIMARY_COLOR, size: size);
+      return Icon(Icons.wb_sunny, color: UIColor.PRIMARY_COLOR, size: size);
     }
   }
 }

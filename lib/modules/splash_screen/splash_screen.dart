@@ -11,7 +11,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 5)).then((value) async {
+    Future.delayed(Duration(seconds: 4)).then((value) async {
       UsuarioDAO usuarioDAO = new UsuarioDAO();
       DateTime dataExpiracao = await usuarioDAO.consultarDataExpiracao(context);
       if (DateTime.now().isAfter(dataExpiracao)) {
