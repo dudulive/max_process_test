@@ -35,7 +35,9 @@ class MaxAppBar {
       elevation: 0.0,
       actions: <Widget>[
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).pushNamed('/home');
+          },
           icon: Icon(
             Icons.home,
             size: 25,

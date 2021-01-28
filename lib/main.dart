@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:max_process_test/database/app_database.dart';
 import 'package:max_process_test/modules/home/home_page.dart';
+import 'package:max_process_test/modules/listagem/listagem_page.dart';
 import 'package:max_process_test/modules/login/login_page.dart';
 
 void main() {
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         '/home': (BuildContext context) => new HomePage(),
         '/login': (BuildContext context) => new LoginPage(),
+        '/listagem': (BuildContext context) => new ListagemPage(),
       },
       debugShowCheckedModeBanner: false,
       title: 'Max Procress',

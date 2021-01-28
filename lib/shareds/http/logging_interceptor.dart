@@ -2,13 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:http_interceptor/interceptor_contract.dart';
+import 'package:max_process_test/database/dao/usuario_dao.dart';
 
 class LoggingInterceptor implements InterceptorContract {
-
   static const _AUTHORIZATION = 'Authorization';
 
   BuildContext _context;
   Map<String, String> _headers;
+  UsuarioDAO usuarioDAO = new UsuarioDAO();
 
   LoggingInterceptor({context, headers}) {
     _context = context;
@@ -24,8 +25,8 @@ class LoggingInterceptor implements InterceptorContract {
     data.headers.addAll(_headers);
 
     if (_context != null) {
-      //AccessTokenModel model = await new Wso2Service().validarToken(_context);
-      //data.headers[_AUTHORIZATION] = model.tokenType + " " + model.token;
+      String token = await usuarioDAO.consultarToken(_context);
+      data.headers[_AUTHORIZATION] = token;
     }
     print('HEADERS: ${data.headers}');
     return data;

@@ -19,6 +19,9 @@ class MaxBottomNavigationBarMenu extends StatelessWidget {
         Navigator.of(context).pushNamed('/login');
       });
     }
+    if (selectedIndex == 0) {
+      Navigator.of(context).pushNamed('/listagem');
+    }
   }
 
   @override

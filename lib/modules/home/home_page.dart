@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   );
                 default:
-                  if (snapshot.hasError) {
+                  if (snapshot.hasError && snapshot.data == null) {
                     return Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
