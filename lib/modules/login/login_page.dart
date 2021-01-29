@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:max_process_test/database/dao/usuario_dao.dart';
@@ -24,25 +26,27 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     ScreenUtil().init(context);
-    return Scaffold(
-      body: Container(
-        height: ScreenUtil.screenHeightPerc(100),
-        decoration: BoxDecoration(
-          color: Colors.white,
-        ),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Container(
-                margin:
-                    EdgeInsets.only(top: 100, bottom: 10, left: 20, right: 20),
-                width: ScreenUtil.screenWidthDp,
-                height: ScreenUtil.screenHeightPerc(80),
-                child: viewNewUser()),
+    return WillPopScope(
+        onWillPop: () => exit(0),
+        child: Scaffold(
+          body: Container(
+            height: ScreenUtil.screenHeightPerc(100),
+            decoration: BoxDecoration(
+              color: Colors.white,
+            ),
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Container(
+                    margin: EdgeInsets.only(
+                        top: 100, bottom: 10, left: 20, right: 20),
+                    width: ScreenUtil.screenWidthDp,
+                    height: ScreenUtil.screenHeightPerc(80),
+                    child: viewNewUser()),
+              ),
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   Container loading() {

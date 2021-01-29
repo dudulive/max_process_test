@@ -20,11 +20,11 @@ class _ListagemPageState extends State<ListagemPage> {
   @override
   Widget build(BuildContext context) {
     ScreenUtil().init(context);
-    Timer.periodic(new Duration(seconds: 60), (timer) {
-      setState(() {
-        apiService.listagem(context);
-      });
-    });
+    //Timer.periodic(new Duration(seconds: 60), (timer) {
+    //  setState(() {
+    //   apiService.listagem(context);
+    //  });
+    // });
     return Stack(
       children: <Widget>[
         Container(
@@ -65,8 +65,6 @@ class _ListagemPageState extends State<ListagemPage> {
   }
 
   Widget creatBuild(List<ListagemModel> list) {
-    bool isPortrait =
-        MediaQuery.of(context).orientation == Orientation.portrait;
     return Column(
       children: <Widget>[
         Align(
@@ -120,30 +118,27 @@ class _ListagemPageState extends State<ListagemPage> {
         Padding(
             padding: EdgeInsets.only(top: ScreenUtil.screenHeightPerc(1)),
             child: Container(
-              width: ScreenUtil.screenWidthDp,
-              height: isPortrait
-                  ? ScreenUtil.screenHeightDp
-                  : ScreenUtil.screenHeightDp * 2,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
+                width: ScreenUtil.screenWidthDp,
+                height: ScreenUtil.screenHeightDp + 60,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
                 ),
-              ),
-              child: Stack(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(top: 20),
-                    child: ListView.builder(
-                        itemCount: list.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return item(list[index]);
-                        }),
-                  )
-                ],
-              ),
-            ))
+                child: Container(
+                  width: ScreenUtil.screenWidthDp,
+                  height: ScreenUtil.screenHeightDp +
+                      ScreenUtil.screenHeightPerc(list.length.toDouble()),
+                  padding: EdgeInsets.only(top: 20, bottom: 40),
+                  child: ListView.builder(
+                      itemCount: list.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (BuildContext context, int index) {
+                        return item(list[index]);
+                      }),
+                )))
       ],
     );
   }
@@ -151,7 +146,7 @@ class _ListagemPageState extends State<ListagemPage> {
   Container item(ListagemModel listagemModel) {
     return Container(
       height: ScreenUtil.screenHeightPerc(10),
-      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
           border: Border.all(

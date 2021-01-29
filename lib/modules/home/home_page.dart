@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:max_process_test/database/dao/usuario_dao.dart';
@@ -16,21 +18,23 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     ScreenUtil().init(context);
-    return Stack(
-      children: <Widget>[
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-          ),
-        ),
-        Scaffold(
-            backgroundColor: Colors.transparent,
-            body: SingleChildScrollView(child: creatBuild()),
-            bottomNavigationBar: MaxBottomNavigationBarMenu(
-              context: context,
-            )),
-      ],
-    );
+    return new WillPopScope(
+        onWillPop: () => exit(0),
+        child: Stack(
+          children: <Widget>[
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+              ),
+            ),
+            Scaffold(
+                backgroundColor: Colors.transparent,
+                body: SingleChildScrollView(child: creatBuild()),
+                bottomNavigationBar: MaxBottomNavigationBarMenu(
+                  context: context,
+                )),
+          ],
+        ));
   }
 
   Widget creatBuild() {
@@ -40,7 +44,10 @@ class _HomePageState extends State<HomePage> {
             alignment: Alignment.center,
             child: Container(
               margin: EdgeInsets.only(
-                  left: 50, right: 50, top: ScreenUtil.screenHeightPerc(40), bottom: 20),
+                  left: 50,
+                  right: 50,
+                  top: ScreenUtil.screenHeightPerc(40),
+                  bottom: 20),
               child: Image.asset("lib/assets/logo_max1.jpg"),
             )),
         labelDadosUsuario(),

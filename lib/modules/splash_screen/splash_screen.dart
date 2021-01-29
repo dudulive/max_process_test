@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:max_process_test/database/dao/usuario_dao.dart';
 import 'package:max_process_test/util/screen_util.dart';
@@ -26,16 +28,18 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     ScreenUtil().init(context);
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        decoration: new BoxDecoration(color: Colors.white),
-        child: Center(
-            child: Container(
-          color: Colors.transparent,
-          child: Image.asset("lib/assets/logo_max1.jpg"),
-        )),
-      ),
-    );
+    return WillPopScope(
+        onWillPop: () => exit(0),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Container(
+            decoration: new BoxDecoration(color: Colors.white),
+            child: Center(
+                child: Container(
+              color: Colors.transparent,
+              child: Image.asset("lib/assets/logo_max1.jpg"),
+            )),
+          ),
+        ));
   }
 }
