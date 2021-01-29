@@ -2,12 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:max_process_test/database/dao/usuario_dao.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:max_process_test/modules/login/login_controller.dart';
 import 'package:max_process_test/resources/values/ui_color.dart';
-import 'package:max_process_test/services/api_service.dart';
 import 'package:max_process_test/shareds/models/login/login_password_model.dart';
-import 'package:max_process_test/util/http_util.dart';
-import 'package:max_process_test/util/modal_util.dart';
 import 'package:max_process_test/util/screen_util.dart';
 
 class LoginPage extends StatefulWidget {
@@ -16,12 +14,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController login = new TextEditingController();
-  TextEditingController senha = new TextEditingController();
-  bool passwordVisitibility = false;
-  ApiService apiService = new ApiService();
-  UsuarioDAO usuarioDAO = new UsuarioDAO();
   final _formKey = GlobalKey<FormState>();
+  final controller = LoginController();
 
   @override
   Widget build(BuildContext context) {
@@ -102,27 +96,28 @@ class _LoginPageState extends State<LoginPage> {
             color: Colors.white,
             border: Border.all(color: Colors.transparent, width: 5),
             borderRadius: BorderRadius.circular(50)),
-        child: TextFormField(
-          controller: login,
-          enabled: true,
-          minLines: 1,
-          maxLines: 1,
-          autofocus: false,
-          validator: (value) {
-            if (value.isEmpty) {
-              return 'Campo Obrigatório.';
-            }
-            return null;
-          },
-          style: TextStyle(color: Colors.black, fontSize: 20),
-          decoration: getOutlineInputBorderDecorationPrefixIcon(
-              'LOGIN',
-              UIColor.ACCENT_COLOR,
-              Icon(
-                Icons.person,
-                color: UIColor.ACCENT_COLOR,
-              )),
-        ));
+        child: Observer(
+            builder: (_) => TextFormField(
+                  controller: controller.login,
+                  enabled: true,
+                  minLines: 1,
+                  maxLines: 1,
+                  autofocus: false,
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Campo Obrigatório.';
+                    }
+                    return null;
+                  },
+                  style: TextStyle(color: Colors.black, fontSize: 20),
+                  decoration: getOutlineInputBorderDecorationPrefixIcon(
+                      'LOGIN',
+                      UIColor.ACCENT_COLOR,
+                      Icon(
+                        Icons.person,
+                        color: UIColor.ACCENT_COLOR,
+                      )),
+                )));
   }
 
   InputDecoration getOutlineInputBorderDecorationPrefixIcon(
@@ -208,50 +203,52 @@ class _LoginPageState extends State<LoginPage> {
               color: Colors.white,
               border: Border.all(color: Colors.transparent, width: 5),
               borderRadius: BorderRadius.circular(50)),
-          child: TextFormField(
-            controller: senha,
-            maxLength: 15,
-            style: TextStyle(color: Colors.black, fontSize: 20),
-            keyboardType: TextInputType.text,
-            enableInteractiveSelection: true,
-            autofocus: false,
-            obscureText: passwordVisitibility,
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Campo Obrigatório.';
-              }
-              return null;
-            },
-            decoration: getOutlineInputBorderDecorationPassword(
-                "SENHA",
-                UIColor.ACCENT_COLOR,
-                new Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Icon(
-                    Icons.lock_outline,
-                    color: UIColor.ACCENT_COLOR,
-                  ),
-                ),
-                GestureDetector(
-                  dragStartBehavior: DragStartBehavior.down,
-                  onTap: () {
-                    setState(() {
-                      this.passwordVisitibility = !passwordVisitibility;
-                    });
-                  },
-                  child: Container(
-                      padding: EdgeInsets.only(right: 10),
-                      child: this.passwordVisitibility
-                          ? Icon(
-                              Icons.visibility,
-                              color: UIColor.ACCENT_COLOR,
-                            )
-                          : Icon(
-                              Icons.visibility_off,
-                              color: UIColor.ACCENT_COLOR,
-                            )),
-                )),
-          ),
+          child: Observer(
+              builder: (_) => TextFormField(
+                    controller: controller.senha,
+                    maxLength: 15,
+                    style: TextStyle(color: Colors.black, fontSize: 20),
+                    keyboardType: TextInputType.text,
+                    enableInteractiveSelection: true,
+                    autofocus: false,
+                    obscureText: controller.passwordVisitibility,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Campo Obrigatório.';
+                      }
+                      return null;
+                    },
+                    decoration: getOutlineInputBorderDecorationPassword(
+                        "SENHA",
+                        UIColor.ACCENT_COLOR,
+                        new Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Icon(
+                            Icons.lock_outline,
+                            color: UIColor.ACCENT_COLOR,
+                          ),
+                        ),
+                        GestureDetector(
+                          dragStartBehavior: DragStartBehavior.down,
+                          onTap: () {
+                            setState(() {
+                              controller.passwordVisitibility =
+                                  !controller.passwordVisitibility;
+                            });
+                          },
+                          child: Container(
+                              padding: EdgeInsets.only(right: 10),
+                              child: controller.passwordVisitibility
+                                  ? Icon(
+                                      Icons.visibility,
+                                      color: UIColor.ACCENT_COLOR,
+                                    )
+                                  : Icon(
+                                      Icons.visibility_off,
+                                      color: UIColor.ACCENT_COLOR,
+                                    )),
+                        )),
+                  )),
         ));
   }
 
@@ -267,10 +264,7 @@ class _LoginPageState extends State<LoginPage> {
               Expanded(
                 child: whiteFlatButton(
                   () {
-                    setState(() {
-                      senha.clear();
-                      login.clear();
-                    });
+                    controller.limparCampos();
                   },
                   "Limpar",
                 ),
@@ -283,9 +277,9 @@ class _LoginPageState extends State<LoginPage> {
                   if (_formKey.currentState.validate()) {
                     LoginPasswordModel loginPasswordModel =
                         new LoginPasswordModel();
-                    loginPasswordModel.login = this.login.text.trim();
-                    loginPasswordModel.password = senha.text.trim();
-                    this.avancar(loginPasswordModel);
+                    loginPasswordModel.login = controller.login.text.trim();
+                    loginPasswordModel.password = controller.senha.text.trim();
+                    controller.avancar(loginPasswordModel, context);
                   }
                 }, "Avancar"),
               ),
@@ -294,33 +288,5 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
     );
-  }
-
-  Future<void> avancar(LoginPasswordModel loginPasswordModel) async {
-    await apiService.login(context, loginPasswordModel).then((value) async {
-      await usuarioDAO.deletarTodos(context);
-      await usuarioDAO.salvar(context, value);
-      Navigator.of(context).pushNamed('/home');
-    }).catchError((error) {
-      if (error.getStatusCode() == 401) {
-        ModalUtil.openModalBlueWithIcon(
-            Icon(
-              Icons.error,
-              color: Colors.white,
-              size: ScreenUtil().setSp(110),
-            ),
-            "Usuário ou senha inválidos",
-            context);
-      } else {
-        ModalUtil.openModalBlueWithIcon(
-            Icon(
-              Icons.error,
-              color: Colors.white,
-              size: ScreenUtil().setSp(110),
-            ),
-            HttpUtil.tratarRetornoComMensagemPadrao(error, error.getMessage()),
-            context);
-      }
-    });
   }
 }

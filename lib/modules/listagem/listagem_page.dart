@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:max_process_test/modules/listagem/listagem_controller.dart';
 import 'package:max_process_test/resources/values/ui_color.dart';
-import 'package:max_process_test/services/api_service.dart';
 import 'package:max_process_test/shareds/models/listagem/listagem_model.dart';
 import 'package:max_process_test/shareds/widget/custom_circular_progress.dart';
 import 'package:max_process_test/shareds/widget/max_app_bar.dart';
@@ -15,7 +16,7 @@ class ListagemPage extends StatefulWidget {
 }
 
 class _ListagemPageState extends State<ListagemPage> {
-  ApiService apiService = new ApiService();
+  final controller = ListagemController();
 
   @override
   Widget build(BuildContext context) {
@@ -39,21 +40,21 @@ class _ListagemPageState extends State<ListagemPage> {
             child: Container(
               child: SingleChildScrollView(
                   child: FutureBuilder(
-                      future: apiService.listagem(context),
+                      future: controller.listagem(context),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         switch (snapshot.connectionState) {
                           case ConnectionState.waiting:
                           case ConnectionState.none:
                             return CustomCircularProgress();
                           default:
-                            if (snapshot.hasError && snapshot.data) {
+                            if (snapshot.hasError || controller.lista.length == 0) {
                               return Container(
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                 ),
                               );
                             } else {
-                              return creatBuild(snapshot.data);
+                              return creatBuild();
                             }
                         }
                       })),
@@ -64,83 +65,89 @@ class _ListagemPageState extends State<ListagemPage> {
     );
   }
 
-  Widget creatBuild(List<ListagemModel> list) {
-    return Column(
-      children: <Widget>[
-        Align(
-            alignment: Alignment.center,
-            child: Container(
-              height: ScreenUtil.screenHeightPerc(30),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: ScreenUtil.screenWidthPerc(30),
-                    height: ScreenUtil.screenHeightPerc(6),
-                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(50),
-                      border: Border.all(color: UIColor.ACCENT_COLOR, width: 2),
-                    ),
-                    child: FlatButton(
-                      onPressed: () {
-                        setState(() {
-                          apiService.listagem(context);
-                        });
-                      },
-                      colorBrightness: Brightness.dark,
-                      child: FittedBox(
-                          fit: BoxFit.contain,
-                          child: Text(
-                            'Atualizar',
-                            style: TextStyle(
-                              color: UIColor.ACCENT_COLOR,
-                              fontSize: ScreenUtil().setSp(50),
+  Widget creatBuild() {
+    return Observer(
+        builder: (_) => Column(
+              children: <Widget>[
+                Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      height: ScreenUtil.screenHeightPerc(30),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: ScreenUtil.screenWidthPerc(30),
+                            height: ScreenUtil.screenHeightPerc(6),
+                            margin: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 0),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(50),
+                              border: Border.all(
+                                  color: UIColor.ACCENT_COLOR, width: 2),
                             ),
-                          )),
-                    ),
-                  ),
-                  Text(list[0].datePtBr(),
-                      style: TextStyle(
+                            child: FlatButton(
+                              onPressed: () {
+                                controller.listagem(context);
+                              },
+                              colorBrightness: Brightness.dark,
+                              child: FittedBox(
+                                  fit: BoxFit.contain,
+                                  child: Text(
+                                    'Atualizar',
+                                    style: TextStyle(
+                                      color: UIColor.ACCENT_COLOR,
+                                      fontSize: ScreenUtil().setSp(50),
+                                    ),
+                                  )),
+                            ),
+                          ),
+                          Text(controller.lista[0].datePtBr(),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: ScreenUtil().setSp(80))),
+                          Text(
+                              controller.lista[0].temperatureC.toString() +
+                                  "° C",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: ScreenUtil().setSp(100))),
+                          clima(controller.lista[0].temperatureC,
+                              ScreenUtil().setSp(150))
+                        ],
+                      ),
+                    )),
+                Padding(
+                    padding:
+                        EdgeInsets.only(top: ScreenUtil.screenHeightPerc(1)),
+                    child: Container(
+                        width: ScreenUtil.screenWidthDp,
+                        height: ScreenUtil.screenHeightDp + 60,
+                        decoration: BoxDecoration(
                           color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: ScreenUtil().setSp(80))),
-                  Text(list[0].temperatureC.toString() + "° C",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: ScreenUtil().setSp(100))),
-                  clima(list[0].temperatureC, ScreenUtil().setSp(150))
-                ],
-              ),
-            )),
-        Padding(
-            padding: EdgeInsets.only(top: ScreenUtil.screenHeightPerc(1)),
-            child: Container(
-                width: ScreenUtil.screenWidthDp,
-                height: ScreenUtil.screenHeightDp + 60,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
-                ),
-                child: Container(
-                  width: ScreenUtil.screenWidthDp,
-                  height: ScreenUtil.screenHeightDp +
-                      ScreenUtil.screenHeightPerc(list.length.toDouble()),
-                  padding: EdgeInsets.only(top: 20, bottom: 40),
-                  child: ListView.builder(
-                      itemCount: list.length,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (BuildContext context, int index) {
-                        return item(list[index]);
-                      }),
-                )))
-      ],
-    );
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            topRight: Radius.circular(30),
+                          ),
+                        ),
+                        child: Container(
+                          width: ScreenUtil.screenWidthDp,
+                          height: ScreenUtil.screenHeightDp +
+                              ScreenUtil.screenHeightPerc(
+                                  controller.lista.length.toDouble()),
+                          padding: EdgeInsets.only(top: 20, bottom: 40),
+                          child: ListView.builder(
+                              itemCount: controller.lista.length,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (BuildContext context, int index) {
+                                return item(controller.lista[index]);
+                              }),
+                        )))
+              ],
+            ));
   }
 
   Container item(ListagemModel listagemModel) {

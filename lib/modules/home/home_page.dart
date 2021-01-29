@@ -1,8 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:max_process_test/database/dao/usuario_dao.dart';
+import 'package:max_process_test/modules/home/home_controller.dart';
 import 'package:max_process_test/resources/values/ui_color.dart';
 import 'package:max_process_test/shareds/widget/max_bottom_navigation_bar_menu.dart';
 import '../../util/screen_util.dart';
@@ -13,7 +12,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  UsuarioDAO usuarioDAO = new UsuarioDAO();
+  final controller = HomeController();
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +58,7 @@ class _HomePageState extends State<HomePage> {
     return Align(
         alignment: Alignment.center,
         child: FutureBuilder(
-            future: usuarioDAO.consultar(context),
+            future: controller.consultarUsuario(context),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:
