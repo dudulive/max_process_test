@@ -69,6 +69,33 @@ class _ListagemPageState extends State<ListagemPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Container(
+                    width: ScreenUtil.screenWidthPerc(30),
+                    height: ScreenUtil.screenHeightPerc(6),
+                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(50),
+                      border: Border.all(color: UIColor.ACCENT_COLOR, width: 2),
+                    ),
+                    child: FlatButton(
+                      onPressed: () {
+                        setState(() {
+                          apiService.listagem(context);
+                        });
+                      },
+                      colorBrightness: Brightness.dark,
+                      child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: Text(
+                            'Atualizar',
+                            style: TextStyle(
+                              color: UIColor.ACCENT_COLOR,
+                              fontSize: ScreenUtil().setSp(50),
+                            ),
+                          )),
+                    ),
+                  ),
                   Text(list[0].datePtBr(),
                       style: TextStyle(
                           color: Colors.white,
