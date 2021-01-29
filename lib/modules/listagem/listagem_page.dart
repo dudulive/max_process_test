@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:max_process_test/resources/values/ui_color.dart';
 import 'package:max_process_test/services/api_service.dart';
@@ -18,6 +20,11 @@ class _ListagemPageState extends State<ListagemPage> {
   @override
   Widget build(BuildContext context) {
     ScreenUtil().init(context);
+    Timer.periodic(new Duration(seconds: 60), (timer) {
+      setState(() {
+        apiService.listagem(context);
+      });
+    });
     return Stack(
       children: <Widget>[
         Container(
