@@ -21,11 +21,9 @@ class _ListagemPageState extends State<ListagemPage> {
   @override
   Widget build(BuildContext context) {
     ScreenUtil().init(context);
-    //Timer.periodic(new Duration(seconds: 60), (timer) {
-    //  setState(() {
-    //   apiService.listagem(context);
-    //  });
-    // });
+    Timer.periodic(new Duration(seconds: 60), (timer) {
+      controller.listagem(context);
+     });
     return Stack(
       children: <Widget>[
         Container(
