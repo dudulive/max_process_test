@@ -16,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(Duration(seconds: 4)).then((value) async {
       UsuarioDAO usuarioDAO = new UsuarioDAO();
       DateTime dataExpiracao = await usuarioDAO.consultarDataExpiracao(context);
-      if (DateTime.now().isAfter(dataExpiracao)) {
+      if (dataExpiracao != null && DateTime.now().isAfter(dataExpiracao)) {
         usuarioDAO.deletarTodos(context);
         Navigator.pushNamed(context, "/login");
       } else {
